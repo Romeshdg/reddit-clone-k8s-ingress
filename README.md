@@ -4,31 +4,25 @@ This project demonstrates how to deploy a Reddit clone app on Kubernetes with In
 ## Prerequisites
 Before you begin, you should have the following tools installed on your local machine: 
 
-- Docker
-- Minikube cluster ( Running )
-- kubectl
-- Git
+Before we begin with the Project, we need to make sure we have the following prerequisites installed:
 
-You can install Prerequisites by doing this steps. [click here & complete all steps one by one]().
+EC2 ( AMI- Ubuntu, Type- t2.medium )
+Docker
+Minikube
+kubectl
 
+You can Install all this by doing the below steps one by one. and these steps are for Ubuntu AMI.
+# Steps:-
 
-## Installation
-Follow these steps to install and run the Reddit clone app on your local machine:
+# For Docker Installation
+sudo apt-get update
+sudo apt-get install docker.io -y
+sudo usermod -aG docker $USER && newgrp docker
 
-1) Clone this repository to your local machine: `git clone https://github.com/LondheShubham153/reddit-clone-k8s-ingress.git`
-2) Navigate to the project directory: `cd reddit-clone-k8s-ingress`
-3) Build the Docker image for the Reddit clone app: `docker build -t reddit-clone-app .`
-4) Deploy the app to Kubernetes: `kubectl apply -f deployment.yaml`
-1) Deploy the Service for deployment to Kubernetes: `kubectl apply -f service.yaml`
-5) Enable Ingress by using Command: `minikube addons enable ingress`
-6) Expose the app as a Kubernetes service: `kubectl expose deployment reddit-deployment --type=NodePort --port=5000`
-7) Create an Ingress resource: `kubectl apply -f ingress.yaml`
+# For Minikube & Kubectl
+curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+sudo install minikube-linux-amd64 /usr/local/bin/minikube 
 
-
-## Test Ingress DNS for the app:
-- Test Ingress by typing this command: `curl http://domain.com/test`
-
-## Contributing
-If you'd like to contribute to this project, please open an issue or submit a pull request.
-
+sudo snap install kubectl --classic
+minikube start --driver=docker
 
