@@ -1,28 +1,128 @@
-# Reddit Clone App on Kubernetes with Ingress
-This project demonstrates how to deploy a Reddit clone app on Kubernetes with Ingress and expose it to the world using Minikube as the cluster.
+Reddit-Clone-with-Kubernetes
+For Prerequisites click here
+Step 1 Clone the source code
+First step is to clone the source code you can do it using bellow command
 
-## Prerequisites
-Before you begin, you should have the following tools installed on your local machine: 
+git clone https://github.com/sanket363/Reddit-Clone-with-Kubernetes.git
+Step 2 Containerize the Application using Docker
+Write a Dockerfile as below
 
-Before we begin with the Project, we need to make sure we have the following prerequisites installed:
+FROM node:19-alpine3.15
 
-EC2 ( AMI- Ubuntu, Type- t2.medium )
-Docker
-Minikube
-kubectl
+WORKDIR /reddit-clone
 
-You can Install all this by doing the below steps one by one. and these steps are for Ubuntu AMI.
-# Steps:-
+COPY . /reddit-clone
 
-# For Docker Installation
-sudo apt-get update
-sudo apt-get install docker.io -y
-sudo usermod -aG docker $USER && newgrp docker
+RUN npm install 
 
-# For Minikube & Kubectl
-curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
-sudo install minikube-linux-amd64 /usr/local/bin/minikube 
+EXPOSE 3000
 
-sudo snap install kubectl --classic
-minikube start --driver=docker
+CMD ["npm","run","dev"]
+Step 3 Building Docker-Image
+Build a Docker Image
 
+docker build -t <image-name> .
+Step 4 Push the image to DockerHub
+For pushing the image to DockerHub you will need to login to the DockerHub account first for that use below command
+
+docker login
+You will be prompted to enter your docker account username and password.
+
+If you don't have the DockerHub account then click here
+
+Once logged in to your DockerHub account Use bellow command to push your build image to the DockerHub repository
+
+docker tag <image-id> <docker-username>/<image-name:tag>
+
+docker push <docker-username>/<image-name:tag>
+Step 5 Writing a kubernetes Manifest File
+Now, You might be wondering what this manifest file in Kubernetes is. Don't worry, I'll tell you in brief.
+
+When you are going to deploy to Kubernetes or create Kubernetes resources like a pod, replica-set, config map, secret, deployment, etc, you need to write a file called manifest that describes that object and its attributes either in yaml or json. Just like you do in the ansible playbook.
+
+Of course, you can create those objects by using just the command line, but the recommended way is to write a file so that you can version control it and use it in a repeatable way.
+
+Writing a Deployment.yml file
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: reddit-clone-deployment
+  labels:
+    app: reddit-clone
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: reddit-clone
+  template:
+    metadata:
+      labels:
+        app: reddit-clone
+    spec:
+      containers:
+      - name: reddit-clone
+        image: snaket2628/reddit-clone
+        ports:
+        - containerPort: 3000
+Writing a Service.yml file
+apiVersion: v1
+kind: Service
+metadata:
+  name: reddit-clone-service
+  labels:
+    app: reddit-clone
+spec:
+  type: NodePort
+  ports:
+  - port: 3000
+    targetPort: 3000
+    nodePort: 31000
+  selector:
+    app: reddit-clone
+Step 7 Deploy the app to the kubernetes & Create a Service for it.
+Now, we have a deployment file for our app and we have a running Kubernetes cluster, we can deploy the app to Kubernetes. To deploy the app you need to run following the command:
+
+kubectl apply -f deployment.yaml -n <name-space>
+Same for the service file
+
+kubectl apply -f service.yaml -n <name-space>
+Configuring the Ingress
+Writing ingress.yml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-reddit-app
+spec:
+  rules:
+  - host: "domain.com"
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/test"
+        backend:
+          service:
+            name: reddit-clone-service
+            port:
+              number: 3000
+  - host: "*.domain.com"
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/test"
+        backend:
+          service:
+            name: reddit-clone-service
+            port:
+              number: 3000
+apply the ingress file with following command:
+
+kubectl apply -f ingress.yml -n <name-space>
+Step 8 Expose the application
+First We need to expose our deployment so use kubectl expose deployment reddit-clone-deployment --type=NodePort command.
+
+You can test your deployment using curl -L http://{minikubeip}:31000. Port 31000 is defined in Service.yml
+
+Then We have to expose our app service kubectl port-forward svc/reddit-clone-service 3000:3000 --address 0.0.0.0 &
+
+Test Ingress
+Now It's time to test your ingress so use the curl -L domain/test command in the terminal.
