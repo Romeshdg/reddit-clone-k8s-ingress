@@ -1,5 +1,15 @@
 # Reddit-Clone-with-Kubernetes
 
+Highlights of this project:
+
+🚀 Automated a highly available Reddit Clone application.
+🚀 Used Docker, DockerHub, and Kubernetes to streamline the deployment process.
+🚀 Implemented continuous deployment for easy updates and scalability.
+🚀 Used Kubernetes Ingress to link the application to the domain for continuous availability.
+
+Key technologies used: Docker, Docker Hub, Kubernetes, Minikube, CI/CD, Containerization, Automation, Monitoring, Logging, Reddit Clone Application.
+
+
 ## For Prerequisites [click here](https://trainwithshubham.hashnode.dev/prerequisite-for-deployment-of-a-reddit-copy-on-kubernetes-with-ingress-enabled)
 
 ## Step 1 Clone the source code
@@ -178,3 +188,8 @@ Now It's time to test your ingress so use the curl -L domain/test command in the
 ## Final step 
 
 Navigate to your chrome browser and enter http://{public-ip}:3000
+
+
+## Overall, this project demonstrates how DevOps practices can be used to enhance the user experience and ensure the continuous availability of web applications. By automating the deployment process and using tools like Docker, DockerHub, and Kubernetes, developers can focus on improving the application itself while leaving the deployment process to the machines.
+
+Thank you!
